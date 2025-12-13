@@ -279,3 +279,35 @@ SELECT d.D_name, COUNT(t.T_id)
 FROM DEPARTMENT d
 LEFT JOIN TICKET t ON d.D_number = t.D_number
 GROUP BY d.D_name;
+
+-- Query 6: Retrieve the names of support agents along with their departments and the number of skills assigned to each agent.
+
+SELECT e.F_name AS First_name, e.L_name AS Last_name ,d.d_name AS Department_name, COUNT(sk.skill) AS skills_count
+FROM  SUPPORT_AGENT sa, DEPARTMENT d,SA_SKILLS sk, EMPLOYEE e
+WHERE sa.e_id=e.e_id AND e.d_number=d.d_number AND sk.sa_id=sa.e_id
+GROUP BY e.F_name, e.L_name, d.D_name;
+
+-- Query 7: Display departments that currently have unresolved tickets (Open or In Progress) and the total number of such tickets.
+
+SELECT d.D_name, COUNT(t.T_id) AS unresolved_tickets
+FROM DEPARTMENT d,TICKET t 
+WHERE d.D_number=t.D_number AND t.T_status IN ('Open', 'In Progress')
+GROUP BY d.D_name;
+
+-- Query 8: Display the top three departments that generate the highest number of tickets in the system.
+
+SELECT *
+FROM (
+    SELECT d.D_name AS department_name,COUNT(l.T_id) AS kb_usage_count
+    FROM DEPARTMENT d, TICKET t, TICKET_LINKED_TO_KBA l
+    WHERE d.D_number = t.D_number AND t.T_id = l.T_id
+    GROUP BY d.D_name ORDER BY kb_usage_count DESC
+)
+WHERE ROWNUM <= 3;
+
+-- Query 9: Show the number of employees working in each department.
+SELECT d.D_name AS department_name, COUNT(e.E_id) AS Num_of_employees
+FROM DEPARTMENT d,
+     EMPLOYEE e
+WHERE d.D_number = e.D_number
+GROUP BY d.D_name;
